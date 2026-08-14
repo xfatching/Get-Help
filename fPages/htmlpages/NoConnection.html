@@ -1,0 +1,82 @@
+<head>
+<title></title>
+<style>
+      @font-face {
+    font-family: "Gill Sans"; /* Name you'll use in CSS */
+    src: url("../fonts/Gill Sans.otf") format("opentype"),
+         url("../fonts/Gill Sans.otf") format("opentype"); /* Path relative to your CSS file */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* Optional, helps with performance */
+  }
+
+      @font-face {
+    font-family: "Gill Sans MT"; /* Name you'll use in CSS */
+    src: url("../fonts/Gill Sans Medium.otf") format("opentype"),
+         url("../fonts/Gill Sans Medium.otf") format("opentype"); /* Path relative to your CSS file */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* Optional, helps with performance */
+  }
+
+  body {
+      font-family: 'Gill Sans', sans-serif;
+      color: #000000;
+  }
+
+  p {
+      font-family: 'Gill Sans', sans-serif;
+      color: #000000;
+      font-style: normal;
+  }
+
+  a {
+      font-family: 'Gill Sans', sans-serif;
+      color: #0000ff;
+      font-style: normal;
+  }
+
+  label {
+      font-family: 'Gill Sans', sans-serif;
+      color: #000000;
+      font-style: normal;
+  }
+
+  .mt {
+      font-family: 'Gill Sans MT', sans-serif;
+      color: #000000;
+      font-style: normal;
+  }
+</style>
+</head>
+<body>
+<p><h1>Can not connect to website</h1></p>
+<p>You can try to:</p>
+<p> - Check is <span id="urlDisplay">this website</span> correct</p>
+<p> - Search this website in the internet</p>
+<p> - Refresh website</p>
+<p> - Check your network</p>
+<p> - Reconnect to your Wi-Fi</p>
+<br>
+<button type="button" id="refreshBtn">Refresh</button>
+
+<script type="text/javascript">
+    // 1. Get the URL from the query string
+    var params = window.location.search.substring(1);
+    var url = decodeURIComponent(params.split('=')[1]);
+
+    // 2. Update the text
+    if (url && url !== "undefined") {
+        document.getElementById('urlDisplay').innerText = url;
+    }
+
+    // 3. Make the button refresh that specific URL
+    document.getElementById('refreshBtn').onclick = function() {
+        if (url && url !== "undefined") {
+            window.location.href = url; // Or use window.location.replace(url)
+        } else {
+            location.reload(); // Fallback
+        }
+    };
+</script>
+</body>
