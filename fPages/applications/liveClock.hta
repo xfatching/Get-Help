@@ -1,0 +1,30 @@
+<title> LiveClock </title>
+
+<HTA:APPLICATION 
+    border="thin" 
+    caption="yes" 
+    showintaskbar="no" 
+    sysmenu="yes" 
+    contextmenu="no" 
+    scroll="no"
+    maximizebutton="no" 
+    minimizebutton="no"
+/>
+<script>
+    function pad(n) { return n < 10 ? "0" + n : n; }
+    function update() {
+        var d = new Date();
+        document.getElementById("date").innerHTML = d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate();
+        document.getElementById("time").innerHTML = pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+    }
+    window.onload = function() {
+        window.resizeTo(275, 255);
+        setInterval(update, 1000);
+        update();
+    };
+</script>
+<body style="font-family:Arial; text-align:center; padding-top:20px;">
+    <h3>Current Time</h3>
+    <div id="date"></div>
+    <div id="time" style="font-size:32px; font-weight:bold;"></div>
+</body>
