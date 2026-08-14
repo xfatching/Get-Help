@@ -1,0 +1,274 @@
+<html>
+<head>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Get Help</title>
+    
+    <hta:application id="oApp" applicationname="fPages" border="thick" borderstyle="normal" caption="yes" icon="C:\Windows\SysWOW64\shell32.dll,23" maximizebutton="no" minimizebutton="yes" showintaskbar="yes" singleinstance="no" sysmenu="yes" version="1.0" windowstate="normal" resizable="no" />
+
+<script>
+var currentActiveUrl = "https://xfatching.pages.dev/f/Search.aspx";
+var historyStack = []; // 歷史堆疊（用於返回功能）
+
+// 1. 自動更新標題功能 (從 iframe 抓取)
+function updateAppTitle() {
+    var frame = document.getElementById('WebBrowser');
+    try {
+        var doc = frame.contentDocument || frame.contentWindow.document;
+        if (doc && doc.title) {
+            document.getElementById('appTitleDisplay').innerText = doc.title;
+        }
+    } catch (e) {
+        // 跨域錯誤或空白頁面，忽略
+        var doc = frame.contentDocument || frame.contentWindow.document;
+        if (doc && doc.title) {
+            document.getElementById('appTitleDisplay').innerText = doc.title;
+        }
+    }
+}
+
+// 2. 處理 iframe 載入
+function checkIframeLoad(iframe) {
+    try {
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (doc.body.innerHTML === "" || doc.body.innerHTML === null) {
+            throw new Error("Connection Failed");
+        }
+        // 載入成功，更新標題
+        updateAppTitle();
+    } catch (e) {
+        console.log("Frame Status: " + e.message);
+        // 如果 IE 無法載入（如 Google CSE 錯誤），顯示預設標題
+        document.getElementById('appTitleDisplay').innerText = "顯示標題 (載入失敗)";
+    }
+}
+
+function safeNavigate(url) {
+    if (currentActiveUrl !== url && currentActiveUrl !== "about:blank") {
+        historyStack.push(currentActiveUrl); // 記錄歷史
+    }
+    currentActiveUrl = url;
+    document.getElementById('WebBrowser').src = url; 
+    // 這裡不用 setTimeout 更新標題，交給輪詢器去抓取最終網址
+}
+
+window.onload = function() {
+    window.resizeTo(785, 768);
+    
+    // 綁定按鈕事件
+    document.getElementById('backBtn').onclick = goBack;
+    document.getElementById('homeBtn').onclick = goHome;
+    document.getElementById('aboutBtn').onclick = aboutBox;
+    
+    // 啟動網址偵測輪詢器
+    startUrlWatcher();
+    
+    // 載入首頁 (它會先載入重導向頁面，然後輪詢器會抓到真正的目標)
+    setTimeout(function() {
+        safeNavigate("https://fchtmlhelp.pages.dev/gethelp/Default.aspx");
+    }, 500);
+};
+
+// 返回按鈕
+function goBack() {
+    if (historyStack.length > 0) {
+        var prev = historyStack.pop();
+        currentActiveUrl = prev;
+        document.getElementById('WebBrowser').src = prev;
+        setTimeout(updateAppTitle, 1000);
+    } else {
+        alert("Mistake");
+    }
+}
+
+function aboutBox() {
+    alert(
+	"FatChing Studio Get Help 1.0.0.0 | " +
+	"2026/8/14 | " +
+	"Copyright (C) 2026 FatChing Studio, all rights reserved."
+    );
+}
+
+// 主頁按鈕
+function goHome() {
+    historyStack = []; // 清空歷史
+    safeNavigate("https://fchtmlhelp.pages.dev/gethelp/Default.aspx");
+}
+
+// 4. 鍵盤快捷鍵 (整合在此)
+document.onkeydown = function(e) {
+    var evt = window.event ? window.event : e;
+
+    // Ctrl + W (Change URL)
+    if (evt.ctrlKey && evt.keyCode == 87) {
+        evt.returnValue = false;
+        if (evt.preventDefault) evt.preventDefault();
+    
+        var userUrl = prompt("Enter the URL to display:", "https://");
+    
+        if (userUrl !== null && userUrl !== "") {
+            // Translate keywords
+            if (userUrl.toLowerCase() === "start" || userUrl.toLowerCase() === "setup") {
+               userUrl = "https://xfatching.pages.dev/f/Search.aspx";
+            }
+            if (userUrl.toLowerCase() === "about:wiki") {
+               userUrl = "https://xiufui.fandom.com/zh-tw";
+            }
+            if (userUrl.toLowerCase() === "about:legacystart") {
+               userUrl = "https://internet-explorer.pages.dev";
+            }
+            safeNavigate(userUrl);
+        }
+    }
+
+    // Ctrl + R (Reload)
+    if (evt.ctrlKey && evt.keyCode == 82) {
+        evt.returnValue = false;
+        if (evt.preventDefault) evt.preventDefault();
+        document.getElementById('WebBrowser').src = document.getElementById('WebBrowser').src;
+    }
+
+    // Ctrl + T (Show Borderless Clock)
+    if (evt.ctrlKey && evt.keyCode == 84) {
+        evt.returnValue = false;
+        if (evt.preventDefault) evt.preventDefault();
+        var shell = new ActiveXObject("WScript.Shell");
+        shell.Run("mshta.exe \"" + location.href.substring(0, location.href.lastIndexOf("/")) + "/applications/liveClock.hta\"");
+    }
+
+    // F1 (Show Help)
+    if (evt.keyCode == 112) {
+        evt.returnValue = false;
+        if (evt.preventDefault) evt.preventDefault();
+        var shell = new ActiveXObject("WScript.Shell");
+        var fullPath = document.location.href; 
+        var localPath = fullPath.replace(/^file:\/\/\//, "").replace(/\//g, "\\");
+        var folderPath = localPath.substring(0, localPath.lastIndexOf("\\") + 1);
+        var helpPath = folderPath + "helpdocumentation.chm";
+        shell.Run("hh.exe \"" + helpPath + "\"");
+    }
+}
+
+// 5. 視窗初始化
+window.onload = function() {
+    window.resizeTo(785, 768);
+    
+    // 綁定按鈕事件
+    // document.getElementById('backBtn').onclick = goBack;
+    document.getElementById('homeBtn').onclick = goHome;
+    document.getElementById('aboutBtn').onclick = aboutBox;
+    
+    // 延遲載入網頁
+    setTimeout(function() {
+        safeNavigate("https://fchtmlhelp.pages.dev/gethelp/Default.aspx");
+    }, 500);
+};
+
+// 時鐘功能 (維持原樣)
+function updateClock() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth() + 1;
+    var day = now.getDate();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
+    var seconds = now.getSeconds();
+    if (minutes < 10) minutes = "0" + minutes;
+    if (seconds < 10) seconds = "0" + seconds;
+    var timeString = year + "/" + month + "/" + day + "/" + " " + hours + ":" + minutes + ":" + seconds;
+    var clockElement = document.getElementById('live-clock');
+    if (clockElement) {
+        clockElement.innerHTML = timeString;
+    }
+}
+window.setInterval(updateClock, 1000);
+updateClock();
+
+// 全域變數，記錄上一次偵測到的網址
+var lastDetectedUrl = "";
+
+// 啟動定時器，每 0.5 秒偵測一次 iframe 的網址
+function startUrlWatcher() {
+    var frame = document.getElementById('WebBrowser');
+    
+    setInterval(function() {
+        try {
+            // 嘗試取得 iframe 內部的目前網址
+            var currentUrl = frame.contentWindow.location.href;
+            
+            // 如果網址改變了，代表成功跳轉到新頁面
+            if (currentUrl !== lastDetectedUrl && currentUrl !== "about:blank") {
+                lastDetectedUrl = currentUrl;
+                
+                // 更新標題 (嘗試抓取新頁面的標題)
+                try {
+                    var doc = frame.contentDocument || frame.contentWindow.document;
+                    if (doc && doc.title) {
+                        document.getElementById('appTitleDisplay').innerText = doc.title;
+                    } else {
+                        // 如果抓不到標題，顯示網址的最後一段作為標題
+                        var urlParts = currentUrl.split('/');
+                        var pageName = urlParts[urlParts.length - 1] || "頁面";
+                        document.getElementById('appTitleDisplay').innerText = "正在瀏覽: " + pageName;
+                    }
+                } catch (titleErr) {
+                    // 跨域時無法讀取 title，直接顯示網址
+                    document.getElementById('appTitleDisplay').innerText = "外部頁面: " + currentUrl;
+                }
+            }
+        } catch (e) {
+            // 當 iframe 正在載入或跨域權限不足時，這裡會報錯，直接忽略即可
+            // (舊 IE 跨域讀取 location 會拋出「拒絕存取」的錯誤)
+        }
+    }, 500); // 每 500 毫秒檢查一次
+}
+</script>
+
+<!-- 字體與樣式 (維持原樣) -->
+<style>
+  @font-face {
+    font-family: "Gill Sans";
+    src: url("https://xfatching.pages.dev/f/Gill Sans.otf") format("opentype");
+    font-weight: normal;
+  }
+  body { font-family: 'Gill Sans', sans-serif; color: #000000; }
+  td { font-family: 'Gill Sans', sans-serif; color: #000000; }
+  p, a, label { font-family: 'Gill Sans', sans-serif; font-style: normal; }
+  .mt { font-family: 'Gill Sans MT', sans-serif; font-style: normal; }
+  #appTitleDisplay { font-family: 'Gill Sans MT', sans-serif; font-style: normal; }
+</style>
+
+</head>
+<body>
+      <table>
+            <tbody>
+                <tr>
+                    <td width="350" align="left" valign="top">
+                        <!-- 綁定 ID 的按鈕 -->
+                        <button id="backBtn" title="Back"><b><</b></button> 
+                        <button id="homeBtn" title="Home">H</button>
+                        &nbsp;|&nbsp;
+                        <button id="aboutBtn" title="About"><b>?</b></button>
+                        &nbsp;&nbsp; <span id="appTitleDisplay"></span>
+                    </td>
+                    <td width="500" align="right" valign="top">
+                        <a href="http://fcgethelp.pages.dev">
+                            <button id="gcseBtn" title="Google Custom Search Engine">
+                                <!-- Google SVG Logo 維持原樣 -->
+                                <svg class="lnXdpd" aria-label="Google" height="25" role="img" viewBox="0 0 272 92" width="70" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M31.32 70.33c17.65.17 29.67-11.68 29.67-29.92q.01-2.29-.43-5.08H31.2v8.76h20.6c-1.1 11.47-9.18 17.44-20.27 17.44-12.44 0-21.96-9.35-21.96-22.94 0-13.41 9.1-22.77 21.96-22.77 6.48 0 11.26 2 16.04 6.9l6.14-6.43c-5.38-6.3-13.16-9.31-22.3-9.31C13.7 6.98 0 20.27 0 38.46c0 17.4 13.25 31.7 31.32 31.87" fill="#3186FF"></path>
+                                    <path d="M88.2 70.33c13.2 0 22.77-9.69 22.77-23.15 0-13.2-9.35-22.98-22.77-22.98-12.7 0-22.68 9.02-22.68 22.98 0 13.33 9.43 23.15 22.68 23.15m0-8.04c-8.04 0-13.67-6.6-13.67-15.1s5.93-14.95 13.67-14.95c8.17 0 13.67 6.6 13.67 14.94 0 8.64-5.63 15.11-13.67 15.11" fill="#FC413D"></path>
+                                    <path d="M137.42 70.33c13.29 0 22.77-9.73 22.77-23.15 0-13.2-9.35-22.98-22.77-22.98-12.7 0-22.68 9.02-22.68 22.98 0 13.33 9.43 23.15 22.68 23.15m0-8.04c-8.04 0-13.67-6.6-13.67-15.1s5.93-14.95 13.67-14.95c8.17 0 13.67 6.6 13.67 14.94 0 8.64-5.63 15.11-13.67 15.11" fill="#FFBE00"></path>
+                                    <path d="M185.37 88.57q21.51 0 21.5-24.63V25.77h-8.8v5.37h-.17c-2.75-4.27-7.96-6.68-13.84-6.68-12.7 0-20.44 9.69-20.44 22.6 0 12.86 7.53 22.34 20.78 22.34 6.52 0 11.34-3.72 13.37-6.77h.3v3.94c0 8.67-4.49 13.8-12.82 13.8-5.46 0-9.1-3.01-11.77-8.05l-7.96 3.52c4.2 8.84 10.16 12.73 19.85 12.73m0-27.55c-7.74 0-12.7-5.71-12.7-14.22 0-8.2 4.92-14.13 12.75-14.13s12.65 5.5 12.65 14.09c0 8.68-5.08 14.26-12.7 14.26" fill="#3186FF"></path>
+                                    <path d="M222.91 8.33h-9.22v60.6h9.22z" fill="#00AF57"></path>
+                                    <path d="M250.17 70.25a22.1 22.1 0 0 0 19-10.54l-6.86-4.49c-3 4.2-7.1 6.6-11.72 6.6a13.6 13.6 0 0 1-11.93-7.23l30.93-13.12a20 20 0 0 0-.84-3.22c-3.69-9.48-10.12-13.8-18.8-13.8-13.24 0-22.25 9.66-22.25 23.03 0 13.67 9.47 22.77 22.47 22.77m-13.5-22.81v-.51c0-8.76 5.03-14.64 12.95-14.64 3.76 0 7.15 1.69 9.44 5.67z" fill="#FC413D"></path>
+                                </svg>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+      </table>
+<br>
+<iframe name="WebBrowser" id="WebBrowser" width="745" height="595" src="about:blank" alt="" frameborder="0"></iframe>
+</body>
+</html>
