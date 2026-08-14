@@ -1,0 +1,159 @@
+<html>
+<head>
+    <title>FatChing Studio f Pages Setup</title>
+    
+    <hta:application 
+        id="oApp"
+        applicationname="fPages"
+        border="thick"
+        borderstyle="normal"
+        caption="yes"
+        icon=""
+        maximizebutton="no"
+        minimizebutton="yes"
+        showintaskbar="yes"
+        singleinstance="no"
+        sysmenu="yes"
+        version="1.0"
+        windowstate="normal"
+    />
+
+<script type="text/javascript">
+    window.onload = function() {
+        // Syntax: window.resizeTo(width, height)
+        window.resizeTo(785, 768);
+    };
+</script>
+
+<title>f Pages - FatChing Studio</title>
+
+<base target="WebBrowser">
+
+<script>
+function updateClock() {
+    const now = new Date();
+    
+    // 格式化時間 (例如: 2024年3月27日 22:15:05)
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        weekday: 'long',
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: false 
+    };
+    
+    const timeString = now.toLocaleDateString('zh-TW', options);
+    
+    // 將時間寫入 id 為 live-clock 的元素
+    document.getElementById('live-clock').innerHTML = timeString;
+}
+
+// 每 1000 毫秒（1秒）執行一次
+setInterval(updateClock, 1000);
+
+// 頁面載入時先執行一次，避免空白
+updateClock();
+</script>
+<style>
+      @font-face {
+    font-family: "Gill Sans"; /* Name you'll use in CSS */
+    src: url("https://xfatching.pages.dev/f/Gill Sans.otf") format("opentype"),
+         url("https://xfatching.pages.dev/f/Gill Sans.otf") format("opentype"); /* Path relative to your CSS file */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* Optional, helps with performance */
+  }
+
+      @font-face {
+    font-family: "Gill Sans MT"; /* Name you'll use in CSS */
+    src: url("https://xfatching.pages.dev/f/Gill Sans Medium.otf") format("opentype"),
+         url("https://xfatching.pages.dev/f/Gill Sans Medium.otf") format("opentype"); /* Path relative to your CSS file */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* Optional, helps with performance */
+  }
+
+  body {
+      font-family: 'Gill Sans', sans-serif;
+      color: #000000;
+  }
+
+  p {
+      font-family: 'Gill Sans', sans-serif;
+      color: #000000;
+      font-style: normal;
+  }
+
+  a {
+      font-family: 'Gill Sans', sans-serif;
+      color: #0000ff;
+      font-style: normal;
+  }
+
+  label {
+      font-family: 'Gill Sans', sans-serif;
+      color: #000000;
+      font-style: normal;
+  }
+
+  .mt {
+      font-family: 'Gill Sans MT', sans-serif;
+      color: #000000;
+      font-style: normal;
+  }
+</style>
+
+<script type="text/javascript">
+        // 1. The "Smart Navigation" function
+        function navigate(url) {
+            var targetFrame = document.getElementById('WebBrowser');
+            
+            // Sites that are known to block iframes
+            var blockList = ["google.com", "youtube.com", "facebook.com", "microsoft.com"];
+            var isBlocked = false;
+
+            for (var i = 0; i < blockList.length; i++) {
+                if (url.indexOf(blockList[i]) !== -1) {
+                    isBlocked = true;
+                    break;
+                }
+            }
+
+            if (isBlocked) {
+                // If blocked, open in a new browser window
+                window.open(url, "_blank", "width=1024,height=768,menubar=yes,location=yes,toolbar=yes");
+            } else {
+                // Otherwise, load in the iframe
+                targetFrame.src = url;
+            }
+        }
+
+        // 2. Updated Keyboard Shortcut for Ctrl + W
+        document.onkeydown = function(e) {
+            var evt = window.event ? window.event : e;
+            if (evt.ctrlKey && evt.keyCode == 87) {
+                evt.returnValue = false;
+                if (evt.preventDefault) evt.preventDefault();
+                
+                var userUrl = prompt("Enter the URL to display:", "https://");
+                if (userUrl) navigate(userUrl);
+            }
+        };
+    </script>
+
+</head>
+<body>
+      <table>
+            <tbody>
+                <tr>
+                    <td width="275" align="left" valign="top">FATCHING STUDIO</td><td width="600" align="right" valign="top"> <a href="https://xfatching.pages.dev/index.html" traget="WebBrowser">HOME</a> <a href="https://xfatching.pages.dev/xflive/index.htm" traget="WebBrowser">XFLIVE</a> <a href="https://xfatching.pages.dev/f/Default.aspx.html" traget="WebBrowser">f PAGES</a> <a href="https://xfatching.pages.dev/htmlTests/Default.aspx.html" traget="WebBrowser">HTML TESTS</a> <a href="https://xfatching.pages.dev/applet.html" traget="WebBrowser">APPLET</a> <a href="https://xfatching.pages.dev/community.html" traget="WebBrowser">SOCIAL MEDIA</a> </td>
+                </tr>
+            </tbody>
+      </table>
+<br>
+<iframe name="WebBrowser" id="WebBrowser" width="700" height="570" src="https://xfatching.pages.dev/f/Summary.aspx" alt="" frameborder="0"></iframe><br>
+</body>
+</html>
